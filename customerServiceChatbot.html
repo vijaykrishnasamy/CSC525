@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Service Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .chat-container {
+            background: #fff;
+            width: 400px;
+            height: 600px; /* Fixed size */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-title {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        .chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+        .chat-input {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            outline: none;
+        }
+        .chat-input button {
+            padding: 15px;
+            background: #007bff;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .message.user {
+            color: blue;
+            text-align: right;
+        }
+        .message.bot {
+            color: green;
+            text-align: left;
+        }
+        .message-prefix {
+            font-weight: bold;
+        }
+        .line-space {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-title">Customer Service Chatbot</div>
+        <div class="chat-box" id="chat-box"></div>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Type your question here...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            if (userInput.trim() === "") return;
+
+            // Display user's message
+            displayMessage(userInput, 'user', 'User');
+
+            // Clear the input field
+            document.getElementById('user-input').value = "";
+
+            // Send the message to the server
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: userInput })
+            });
+
+            const data = await response.json();
+
+            // Display chatbot's response
+            displayMessage(data.response, 'bot', 'Customer Service');
+        }
+
+        function displayMessage(message, sender, prefix) {
+            const chatBox = document.getElementById('chat-box');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender, 'line-space');
+            messageElement.innerHTML = `<span class="message-prefix">${prefix}:</span> ${message}`;
+
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
